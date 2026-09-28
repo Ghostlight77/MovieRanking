@@ -1,83 +1,108 @@
+
 #include <iostream>
-#include <iomanip>
-#include <iterator>
-#include <list>
+#include <vector>
 #include <string>
+#include <limits>
+#include <algorithm>
+#include <cctype>
 
 using namespace std;
 
-void display_rankings(const list<string>& movies);
-char get_choice();
-void change_ranking(list<string>& movies, int current_ranking, int new_ranking);
+void display_playlist(const vector<string>& playlist);
 
-int main()
-{
-	list<string> movies("Ghostbusters", "Back to the Future", "Goonies", "Flight of the Navigator", "Shrek");
+int main() {
+    int num_songs = 0;
+    vector<string> playlist;
 
-	display_rankings(movies);
+    while (true) {
+        cout << "How many songs would you like to add to your playlist (3-10)? ";
 
-	char choice = get_choice();
-	while (tolower(choice) == 'y')
-	{
-		int current_ranking = 0;
-		int new_ranking = 0;
+        if (cin >> num_songs) {
+            if (num_songs >= 3 && num_songs <= 10) {
+                break;
+            }
+            else {
+                cout << "Invalid range. Please enter a number between 3 and 10.\n";
+            }
+        }
+        else {
+            cout << "Invalid input. That is not a number.\n";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+    }
 
-		cout << "Enter the ciurrent ranking of a movie to change: ";
-		cin >> current_ranking;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-		cout <, "Enter the new ranking of the movie: "
-		cin >> new_ranking;
+    cout << "\nEnter Your Songs\n";
 
-		change_ranking(movies, current_ranking, new_ranking);
-		display_ranking(movies);
-		choice = get_choice();
-	}
+    for (int i = 0; i < num_songs; ++i) {
+        string title;
+
+        cout << "Enter title for song #" << (i + 1) << ": ";
+        getline(cin, title);
+
+        playlist.push_back(title);
+    }
+
+    display_playlist(playlist);
+
+    char search_choice;
+
+    while (true) {
+        cout << "Would you like to search for a song in your playlist? (y/n): ";
+        cin >> search_choice;
+
+        search_choice = tolower(search_choice);
+
+        if (search_choice == 'y' || search_choice == 'n') {
+            break;
+        }
+
+        cout << "Invalid input. Please enter 'y' for yes or 'n' for no.\n";
+
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+
+    if (search_choice == 'y') {
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+        string search_title;
+
+        cout << "Enter the song title to search for: ";
+        getline(cin, search_title);
+
+        bool found = false;
+
+        for (const auto& song : playlist) {
+            if (song == search_title) {
+                found = true;
+                break;
+            }
+        }
+
+        if (found) {
+            cout << "Success! \"" << search_title
+                 << "\" was found in your playlist.\n";
+        }
+        else {
+            cout << "Sorry, \"" << search_title
+                 << "\" was not found in your playlist.\n";
+        }
+    }
+
+    cout << "\nThank you for using Playlist Builder!\n";
+
+    return 0;
 }
 
-void display_rankings(const list<string>& movies)
-{
-	cout << "\nMOVIE RANKINGS\n"
-		<< "-----------------------\n";
+void display_playlist(const vector<string>& playlist) {
+    cout << "\nYour Playlist\n";
 
-	int rank = 1;
-	for (string m : movies)
-	{
-		cout << rank << " - " << m << endl;
-		rank++;
-	}
-	cout << endl;
+    for (size_t i = 0; i < playlist.size(); ++i) {
+        cout << (i + 1) << ". " << playlist[i] << "\n";
+    }
 
-}
-char get_choice()
-{
-	char choice;
-	cout << "Do you want to change any rankings? (y/n)";
-	cin >> choice;
-	cin.ignore(100, '\n');
-	return choice;
-}
-void change_ranking(list<string>& movies, int current_ranking, int new_ranking)
-{
-	if (current_ranking > 0 && new_ranking > 0 && current_ranking <= movies.size() && new_ranking <= movies.size())
-	{
-		//list<string>::iterator iter = movies.begin();
-		auto iter = movies.begin();
-
-		for (int it = 1; it < current_ranking; it++)
-		{
-			iter++;
-		}
-
-		string movie = *iter;
-
-		movies.erase(iter);
-
-		iter = movies.begin();
-		for (int = 1; it < new_ranking; it++)
-		{
-			iter++;
-		}
-
-		movies.insert(iter, movie);
-	}
+    cout << "\n";
 }
